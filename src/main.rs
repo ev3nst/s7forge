@@ -42,14 +42,14 @@ enum Commands {
     Subscribe {
         #[arg(long)]
         app_id: u32,
-        #[arg(long)]
-        item_id: u64,
+        #[arg(long, value_delimiter = ',')]
+        item_ids: Vec<u64>,
     },
     Unsubscribe {
         #[arg(long)]
         app_id: u32,
-        #[arg(long)]
-        item_id: u64,
+        #[arg(long, value_delimiter = ',')]
+        item_ids: Vec<u64>,
     },
     UpdateWorkshopItem {
         #[arg(long)]
@@ -105,13 +105,15 @@ async fn main() {
                 .await
                 .map(|items| serde_json::to_string_pretty(&items).unwrap())
         }
-        Commands::Subscribe { app_id, item_id } => commands::subscribe::subscribe(app_id, item_id)
-            .await
-            .map(|success| serde_json::to_string_pretty(&success).unwrap()),
-        Commands::Unsubscribe { app_id, item_id } => {
-            commands::unsubscribe::unsubscribe(app_id, item_id)
+        Commands::Subscribe { app_id, item_ids } => {
+            commands::subscribe::subscribe(app_id, item_ids)
                 .await
-                .map(|success| serde_json::to_string_pretty(&success).unwrap())
+                .map(|results| serde_json::to_string_pretty(&results).unwrap())
+        }
+        Commands::Unsubscribe { app_id, item_ids } => {
+            commands::unsubscribe::unsubscribe(app_id, item_ids)
+                .await
+                .map(|results| serde_json::to_string_pretty(&results).unwrap())
         }
         Commands::UpdateWorkshopItem { app_id, item_id } => {
             commands::update_workshop_item::update_workshop_item(app_id, item_id)
