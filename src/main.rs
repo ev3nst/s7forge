@@ -74,6 +74,7 @@ enum Commands {
         app_id: u32,
     },
     SteamLibraryPaths,
+    ClearCache,
 }
 
 #[tokio::main]
@@ -138,6 +139,8 @@ async fn main() {
         },
         Commands::SteamLibraryPaths => commands::steam_library_paths::steam_library_paths()
             .map(|paths| serde_json::to_string_pretty(&paths).unwrap()),
+        Commands::ClearCache => commands::clear_cache::clear_cache()
+            .map(|message| serde_json::to_string_pretty(&message).unwrap()),
     };
 
     match result {

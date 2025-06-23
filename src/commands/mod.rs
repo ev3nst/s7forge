@@ -1,4 +1,5 @@
 pub mod check_item_download;
+pub mod clear_cache;
 pub mod collection_items;
 pub mod fetch_creator_names;
 pub mod search_workshop;
