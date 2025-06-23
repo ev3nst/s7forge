@@ -88,7 +88,6 @@ pub async fn search_workshop(
         return Ok(Vec::new());
     }
 
-    // Fetch creator names
     let creator_ids: Vec<steamworks::SteamId> = workshop_items
         .iter()
         .map(|item| steamworks::SteamId::from_raw(item.owner.steam_id64))
