@@ -6,7 +6,8 @@ use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
 #[command(name = "s7forge")]
-#[command(about = "Steamworks utility wrapper")]
+#[command(about = "Steam utility")]
+#[command(version)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -14,59 +15,118 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Check download status of a workshop item
+    /// 
+    /// Example: s7forge check-item-download --app-id 548430 --item-id 123456789
+    #[command(name = "check-item-download")]
     CheckItemDownload {
-        #[arg(long)]
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
-        #[arg(long)]
+        /// Workshop item ID to check
+        #[arg(long, help = "Workshop item ID to check download status for")]
         item_id: u64,
     },
+    /// Get items from a workshop collection
+    /// 
+    /// Example: s7forge collection-items --app-id 548430 --item-id 987654321
+    #[command(name = "collection-items")]
     CollectionItems {
-        #[arg(long)]
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
-        #[arg(long)]
+        /// Collection ID to fetch items from
+        #[arg(long, help = "Collection ID to get items from")]
         item_id: u64,
     },
+    /// Get detailed information about workshop items
+    /// 
+    /// Example: s7forge workshop-items --app-id 548430 --item-ids 123,456,789
+    #[command(name = "workshop-items")]
     WorkshopItems {
-        #[arg(long)]
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
-        #[arg(long, value_delimiter = ',')]
+        /// Comma-separated list of workshop item IDs
+        #[arg(long, value_delimiter = ',', help = "Workshop item IDs (comma-separated)")]
         item_ids: Vec<u64>,
     },
+    /// Subscribe to workshop items
+    /// 
+    /// Example: s7forge subscribe --app-id 548430 --item-ids 123,456,789
     Subscribe {
-        #[arg(long)]
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
-        #[arg(long, value_delimiter = ',')]
+        /// Comma-separated list of workshop item IDs to subscribe to
+        #[arg(long, value_delimiter = ',', help = "Workshop item IDs to subscribe to (comma-separated)")]
         item_ids: Vec<u64>,
     },
+    /// Unsubscribe from workshop items
+    /// 
+    /// Example: s7forge unsubscribe --app-id 548430 --item-ids 123,456,789
     Unsubscribe {
-        #[arg(long)]
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
-        #[arg(long, value_delimiter = ',')]
+        /// Comma-separated list of workshop item IDs to unsubscribe from
+        #[arg(long, value_delimiter = ',', help = "Workshop item IDs to unsubscribe from (comma-separated)")]
         item_ids: Vec<u64>,
     },
+    /// Update a workshop item you own
+    /// 
+    /// Example: s7forge update-workshop-item --app-id 548430 --item-id 123456789
+    #[command(name = "update-workshop-item")]
     UpdateWorkshopItem {
-        #[arg(long)]
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
-        #[arg(long)]
+        /// Workshop item ID to update
+        #[arg(long, help = "Workshop item ID to update")]
         item_id: u64,
     },
+    /// List all items you're subscribed to for a game
+    /// 
+    /// Example: s7forge subscribed-items --app-id 548430
+    #[command(name = "subscribed-items")]
     SubscribedItems {
-        #[arg(long)]
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
     },
+    /// Search workshop content by text query
+    /// 
+    /// Example: s7forge search-workshop --app-id 548430 --query "tank" --max-results 20
+    #[command(name = "search-workshop")]
     SearchWorkshop {
-        #[arg(long)]
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
-        #[arg(long)]
+        /// Search query text
+        #[arg(long, help = "Text to search for in workshop items")]
         query: String,
-        #[arg(long, default_value = "10")]
+        /// Maximum number of results to return
+        #[arg(long, default_value = "10", help = "Maximum number of search results (default: 10)")]
         max_results: u32,
     },
+    /// Get the local workshop path for a game
+    /// 
+    /// Example: s7forge workshop-path --app-id 548430
+    #[command(name = "workshop-path")]
     WorkshopPath {
-        #[arg(long)]
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
     },
+    /// List all Steam library folder paths
+    /// 
+    /// Example: s7forge steam-library-paths
+    #[command(name = "steam-library-paths")]
     SteamLibraryPaths,
+    /// Clear all cached data (creator names, workshop items)
+    /// 
+    /// Example: s7forge clear-cache
+    #[command(name = "clear-cache")]
     ClearCache,
 }
 
