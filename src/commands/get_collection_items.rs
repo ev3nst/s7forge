@@ -3,9 +3,8 @@ use serde::Serialize;
 use steamworks::PublishedFileId;
 use tokio::sync::mpsc;
 
-use super::get_workshop_items::get_workshop_items;
+use super::get_workshop_items::{EnhancedWorkshopItem, get_workshop_items};
 use crate::core::steam_manager;
-use crate::core::workshop_item::workshop::WorkshopItem;
 
 #[derive(Debug, Serialize)]
 pub struct CollectionInfo {
@@ -22,7 +21,7 @@ pub struct CollectionInfo {
 #[derive(Debug, Serialize)]
 pub struct CollectionDetails {
     pub details: CollectionInfo,
-    pub items: Vec<WorkshopItem>,
+    pub items: Vec<EnhancedWorkshopItem>,
 }
 
 pub async fn get_collection_items(

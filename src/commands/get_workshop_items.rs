@@ -3,8 +3,10 @@ use std::fs;
 
 use futures_util::FutureExt;
 use rustc_hash::FxHashMap;
-use steamworks::PublishedFileId;
+use serde::Serialize;
+use steamworks::{PublishedFileId, SteamId};
 
+use crate::commands::fetch_creator_names::fetch_creator_names;
 use crate::core::steam_manager;
 use crate::core::workshop_item::workshop::{WorkshopItem, WorkshopItemsResult};
 use crate::utils::get_cache_dir::get_cache_dir;
@@ -14,10 +16,26 @@ pub struct WorkshopItemCache {
     pub items: FxHashMap<u64, WorkshopItem>,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct EnhancedWorkshopItem {
+    #[serde(flatten)]
+    pub workshop_item: WorkshopItem,
+    pub creator_name: String,
+}
+
+impl EnhancedWorkshopItem {
+    pub fn new(workshop_item: WorkshopItem, creator_name: String) -> Self {
+        Self {
+            workshop_item,
+            creator_name,
+        }
+    }
+}
+
 pub async fn get_workshop_items(
     steam_game_id: u32,
     item_ids: Vec<u64>,
-) -> Result<Vec<WorkshopItem>, String> {
+) -> Result<Vec<EnhancedWorkshopItem>, String> {
     if item_ids.is_empty() {
         return Ok(Vec::new());
     }
@@ -45,11 +63,27 @@ pub async fn get_workshop_items(
         .filter(|id| !cached_items.contains_key(id))
         .cloned()
         .collect();
-
     if ids_to_fetch.is_empty() {
-        return Ok(item_ids
+        let workshop_items: Vec<WorkshopItem> = item_ids
+            .iter()
+            .filter_map(|id| cached_items.get(id).cloned())
+            .collect();
+        let creator_ids: Vec<SteamId> = workshop_items
+            .iter()
+            .map(|item| SteamId::from_raw(item.owner.steam_id64))
+            .collect();
+
+        let creator_names = fetch_creator_names(creator_ids, steam_game_id).await?;
+
+        return Ok(workshop_items
             .into_iter()
-            .filter_map(|id| cached_items.get(&id).cloned())
+            .map(|item| {
+                let creator_name = creator_names
+                    .get(&item.owner.steam_id64)
+                    .cloned()
+                    .unwrap_or_else(|| "[unknown]".to_string());
+                EnhancedWorkshopItem::new(item, creator_name)
+            })
             .collect());
     }
 
@@ -120,7 +154,6 @@ pub async fn get_workshop_items(
     for item in &fetched_items {
         cached_items.insert(item.published_file_id, item.clone());
     }
-
     let cache_struct = WorkshopItemCache {
         items: cached_items.clone(),
     };
@@ -128,9 +161,27 @@ pub async fn get_workshop_items(
         .map_err(|e| format!("Failed to serialize cache: {}", e))?;
     let _ = fs::write(&cache_path, serialized_cache);
 
-    let result = item_ids
+    let final_items: Vec<WorkshopItem> = item_ids
+        .iter()
+        .filter_map(|id| cached_items.get(id).cloned())
+        .collect();
+
+    let creator_ids: Vec<SteamId> = final_items
+        .iter()
+        .map(|item| SteamId::from_raw(item.owner.steam_id64))
+        .collect();
+
+    let creator_names = fetch_creator_names(creator_ids, steam_game_id).await?;
+
+    let result = final_items
         .into_iter()
-        .filter_map(|id| cached_items.get(&id).cloned())
+        .map(|item| {
+            let creator_name = creator_names
+                .get(&item.owner.steam_id64)
+                .cloned()
+                .unwrap_or_else(|| "[unknown]".to_string());
+            EnhancedWorkshopItem::new(item, creator_name)
+        })
         .collect();
 
     Ok(result)
