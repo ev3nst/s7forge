@@ -1,13 +1,15 @@
-A simple CLI utility for interacting with the Steam Workshop API. S7Forge provides basic commands for managing Steam Workshop content with local caching for improved performance.
+# s7forge
+
+A simple CLI utility for interacting with the Steam Workshop API. S7Forge provides commands for managing Steam Workshop content with local caching for improved performance.
 
 ## Installation
 
 ### Prerequisites
 
-- Windows OS
+- Windows OS (current implementation)
 - Rust 1.70+ 
 - Steam SDK in the same directory as the binary (steam_api64.dll, steam_api64.lib)
-- Steam account
+- Steam account and Steam client running
 
 ### Build from Source
 
@@ -17,67 +19,120 @@ cd s7forge
 cargo build --release
 ```
 
-The compiled binary will be available at `target/release/s7forge.exe` (Windows) or `target/release/s7forge` (Linux/macOS).
+The compiled binary will be available at `target/release/s7forge.exe`.
 
 ## Usage
 
-All commands require an `--app-id` parameter specifying the Steam application ID.
+All commands that interact with the Steam Workshop require an `--app-id` parameter specifying the Steam application ID (e.g., 548430 for Deep Rock Galactic). Use `s7forge <command> --help` to see detailed help for any command.
+
+### Help and Command Discovery
+
+```bash
+# Show all available commands
+s7forge --help
+
+# Show help for a specific command
+s7forge check-item-download --help
+```
 
 ### Check Workshop Item Download Status
 
 ```bash
-s7forge check-item-download --app-id 107410 --item-id 123456789
+s7forge check-item-download --app-id 548430 --item-id 123456789
 ```
 
-### Fetch Creator Names
+### Get Items from Workshop Collection
 
 ```bash
-# Single creator
-s7forge fetch-creator-names --app-id 107410 --creator-ids 76561198000000000
-
-# Multiple creators
-s7forge fetch-creator-names --app-id 107410 --creator-ids 76561198000000000,76561198000000001
+s7forge collection-items --app-id 548430 --item-id 987654321
 ```
 
-### Get Workshop Items
+### Get Workshop Items Information
 
 ```bash
 # Single item
-s7forge get-workshop-items --app-id 107410 --item-ids 123456789
+s7forge workshop-items --app-id 548430 --item-ids 123456789
 
 # Multiple items
-s7forge get-workshop-items --app-id 107410 --item-ids 123456789,987654321,555666777
+s7forge workshop-items --app-id 548430 --item-ids 123456789,987654321,555666777
 ```
 
-### Get Collection Items
+### Subscribe to Workshop Items
 
 ```bash
-s7forge get-collection-items --app-id 107410 --item-id 987654321
+# Single item
+s7forge subscribe --app-id 548430 --item-ids 123456789
+
+# Multiple items (batch subscription)
+s7forge subscribe --app-id 548430 --item-ids 123456789,987654321,555666777
 ```
 
-### Get Subscribed Items
+### Unsubscribe from Workshop Items
 
 ```bash
-s7forge get-subscribed-items --app-id 107410
-```
+# Single item
+s7forge unsubscribe --app-id 548430 --item-ids 123456789
 
-### Subscribe to Workshop Item
-
-```bash
-s7forge subscribe --app-id 107410 --item-id 123456789
-```
-
-### Unsubscribe from Workshop Item
-
-```bash
-s7forge unsubscribe --app-id 107410 --item-id 123456789
+# Multiple items (batch unsubscription)
+s7forge unsubscribe --app-id 548430 --item-ids 123456789,987654321,555666777
 ```
 
 ### Update Workshop Item
 
 ```bash
-s7forge update-workshop-item --app-id 107410 --item-id 123456789
+s7forge update-workshop-item --app-id 548430 --item-id 123456789
 ```
+
+### Get Subscribed Items
+
+```bash
+s7forge subscribed-items --app-id 548430
+```
+
+### Search Workshop Content
+
+```bash
+# Basic search
+s7forge search-workshop --app-id 548430 --query "tank"
+
+# Search with custom result limit
+s7forge search-workshop --app-id 548430 --query "mining equipment" --max-results 20
+```
+
+### Get Workshop Path
+
+```bash
+s7forge workshop-path --app-id 548430
+```
+
+### Get Steam Library Paths
+
+```bash
+s7forge steam-library-paths
+```
+
+### Clear Cache
+
+```bash
+s7forge clear-cache
+```
+
+### Batch Operations
+
+S7Forge supports efficient batch operations for multiple workshop items:
+
+```bash
+# Subscribe to multiple items at once
+s7forge subscribe --app-id 548430 --item-ids 123,456,789,101112
+
+# Unsubscribe from multiple items at once  
+s7forge unsubscribe --app-id 548430 --item-ids 123,456,789
+
+# Get information for multiple items
+s7forge workshop-items --app-id 548430 --item-ids 123,456,789,101112
+```
+
+Batch operations are more efficient than individual calls and provide consolidated status reporting.
 
 ### Example Workshop Item Output
 
@@ -130,15 +185,20 @@ s7forge update-workshop-item --app-id 107410 --item-id 123456789
 ]
 ```
 
-## Caching
+### Caching
 
-S7Forge uses simple local caching to improve performance:
+S7Forge uses local caching to improve performance and reduce API calls:
 
-- **Creator Names**: Single global cache file (`creator_names_cache.bin`)
-- **Workshop Items**: Single global cache file (`workshop_items_cache.bin`)
+- **Creator Names**: Cached globally (`creator_names_cache.bin`)
+- **Workshop Items**: Cached globally (`workshop_items_cache.bin`)
 - **Cache Location**: `{executable_directory}/cache/`
+- **Cache Management**: Use `s7forge clear-cache` to clear all cached data
 
-The cache grows over time, storing previously queried data for faster retrieval.
+The cache grows incrementally, storing previously queried data for faster subsequent retrieval.
+
+## Project Status
+
+S7Forge is in active development. Current version focuses on Windows support with the Steam SDK.
 
 ## License
 
@@ -146,14 +206,17 @@ This project is licensed under the MIT License.
 
 ## Credits
 
-- [steamworks.js](https://github.com/ceifa/steamworks.js) - Some code portions adapted from this project (MIT License)
+- [steamworks.js](https://github.com/ceifa/steamworks.js) - Reference implementation (MIT License)
+- [steamworks-rs](https://github.com/Noxime/steamworks-rs) - Rust Steam API bindings
 
 ## Contributing
 
 Contributions are welcome! Please ensure:
 
-1. Code follows Rust conventions
-2. Formatting is applied: `cargo fmt`
+1. Code follows Rust conventions and passes `cargo clippy`
+2. Code is formatted with `cargo fmt`
+3. New features include appropriate error handling
+4. Changes maintain backward compatibility where possible
 
 ## Support
 
