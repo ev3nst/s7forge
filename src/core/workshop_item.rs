@@ -243,10 +243,8 @@ pub mod workshop {
             Self {
                 num_subscriptions: results
                     .statistic(index, steamworks::UGCStatisticType::Subscriptions),
-                num_favorites: results
-                    .statistic(index, steamworks::UGCStatisticType::Favorites),
-                num_followers: results
-                    .statistic(index, steamworks::UGCStatisticType::Followers),
+                num_favorites: results.statistic(index, steamworks::UGCStatisticType::Favorites),
+                num_followers: results.statistic(index, steamworks::UGCStatisticType::Followers),
                 num_unique_subscriptions: results
                     .statistic(index, steamworks::UGCStatisticType::UniqueSubscriptions),
                 num_unique_favorites: results
@@ -255,24 +253,20 @@ pub mod workshop {
                     .statistic(index, steamworks::UGCStatisticType::UniqueFollowers),
                 num_unique_website_views: results
                     .statistic(index, steamworks::UGCStatisticType::UniqueWebsiteViews),
-                report_score: results
-                    .statistic(index, steamworks::UGCStatisticType::Reports),
+                report_score: results.statistic(index, steamworks::UGCStatisticType::Reports),
                 num_seconds_played: results
                     .statistic(index, steamworks::UGCStatisticType::SecondsPlayed),
                 num_playtime_sessions: results
                     .statistic(index, steamworks::UGCStatisticType::PlaytimeSessions),
-                num_comments: results
-                    .statistic(index, steamworks::UGCStatisticType::Comments),
-                num_seconds_played_during_time_period: results
-                    .statistic(
-                        index,
-                        steamworks::UGCStatisticType::SecondsPlayedDuringTimePeriod,
-                    ),
-                num_playtime_sessions_during_time_period: results
-                    .statistic(
-                        index,
-                        steamworks::UGCStatisticType::PlaytimeSessionsDuringTimePeriod,
-                    ),
+                num_comments: results.statistic(index, steamworks::UGCStatisticType::Comments),
+                num_seconds_played_during_time_period: results.statistic(
+                    index,
+                    steamworks::UGCStatisticType::SecondsPlayedDuringTimePeriod,
+                ),
+                num_playtime_sessions_during_time_period: results.statistic(
+                    index,
+                    steamworks::UGCStatisticType::PlaytimeSessionsDuringTimePeriod,
+                ),
             }
         }
     }

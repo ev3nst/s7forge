@@ -26,56 +26,54 @@ use bincode::{Decode, Encode};
 use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize, Encode, Decode)]
-    pub enum UgcItemVisibility {
-        Public,
-        FriendsOnly,
-        Private,
-        Unlisted,
-    }
+pub enum UgcItemVisibility {
+    Public,
+    FriendsOnly,
+    Private,
+    Unlisted,
+}
 
-    impl From<steamworks::PublishedFileVisibility> for UgcItemVisibility {
-        fn from(visibility: steamworks::PublishedFileVisibility) -> Self {
-            match visibility {
-                steamworks::PublishedFileVisibility::Public => UgcItemVisibility::Public,
-                steamworks::PublishedFileVisibility::FriendsOnly => UgcItemVisibility::FriendsOnly,
-                steamworks::PublishedFileVisibility::Private => UgcItemVisibility::Private,
-                steamworks::PublishedFileVisibility::Unlisted => UgcItemVisibility::Unlisted,
-            }
+impl From<steamworks::PublishedFileVisibility> for UgcItemVisibility {
+    fn from(visibility: steamworks::PublishedFileVisibility) -> Self {
+        match visibility {
+            steamworks::PublishedFileVisibility::Public => UgcItemVisibility::Public,
+            steamworks::PublishedFileVisibility::FriendsOnly => UgcItemVisibility::FriendsOnly,
+            steamworks::PublishedFileVisibility::Private => UgcItemVisibility::Private,
+            steamworks::PublishedFileVisibility::Unlisted => UgcItemVisibility::Unlisted,
         }
     }
+}
 
-    impl From<UgcItemVisibility> for steamworks::PublishedFileVisibility {
-        fn from(val: UgcItemVisibility) -> Self {
-            match val {
-                UgcItemVisibility::Public => steamworks::PublishedFileVisibility::Public,
-                UgcItemVisibility::FriendsOnly => steamworks::PublishedFileVisibility::FriendsOnly,
-                UgcItemVisibility::Private => steamworks::PublishedFileVisibility::Private,
-                UgcItemVisibility::Unlisted => steamworks::PublishedFileVisibility::Unlisted,
-            }
+impl From<UgcItemVisibility> for steamworks::PublishedFileVisibility {
+    fn from(val: UgcItemVisibility) -> Self {
+        match val {
+            UgcItemVisibility::Public => steamworks::PublishedFileVisibility::Public,
+            UgcItemVisibility::FriendsOnly => steamworks::PublishedFileVisibility::FriendsOnly,
+            UgcItemVisibility::Private => steamworks::PublishedFileVisibility::Private,
+            UgcItemVisibility::Unlisted => steamworks::PublishedFileVisibility::Unlisted,
         }
     }
+}
 
-    #[derive(Debug)]
-    pub enum UpdateStatus {
-        Invalid,
-        PreparingConfig,
-        PreparingContent,
-        UploadingContent,
-        UploadingPreviewFile,
-        CommittingChanges,
-    }
+#[derive(Debug)]
+pub enum UpdateStatus {
+    Invalid,
+    PreparingConfig,
+    PreparingContent,
+    UploadingContent,
+    UploadingPreviewFile,
+    CommittingChanges,
+}
 
-    impl From<steamworks::UpdateStatus> for UpdateStatus {
-        fn from(visibility: steamworks::UpdateStatus) -> Self {
-            match visibility {
-                steamworks::UpdateStatus::Invalid => UpdateStatus::Invalid,
-                steamworks::UpdateStatus::PreparingConfig => UpdateStatus::PreparingConfig,
-                steamworks::UpdateStatus::PreparingContent => UpdateStatus::PreparingContent,
-                steamworks::UpdateStatus::UploadingContent => UpdateStatus::UploadingContent,
-                steamworks::UpdateStatus::UploadingPreviewFile => {
-                    UpdateStatus::UploadingPreviewFile
-                }
-                steamworks::UpdateStatus::CommittingChanges => UpdateStatus::CommittingChanges,
-            }
+impl From<steamworks::UpdateStatus> for UpdateStatus {
+    fn from(visibility: steamworks::UpdateStatus) -> Self {
+        match visibility {
+            steamworks::UpdateStatus::Invalid => UpdateStatus::Invalid,
+            steamworks::UpdateStatus::PreparingConfig => UpdateStatus::PreparingConfig,
+            steamworks::UpdateStatus::PreparingContent => UpdateStatus::PreparingContent,
+            steamworks::UpdateStatus::UploadingContent => UpdateStatus::UploadingContent,
+            steamworks::UpdateStatus::UploadingPreviewFile => UpdateStatus::UploadingPreviewFile,
+            steamworks::UpdateStatus::CommittingChanges => UpdateStatus::CommittingChanges,
         }
     }
+}

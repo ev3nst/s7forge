@@ -48,7 +48,8 @@ pub async fn collection_items(
                 Ok(details) => {
                     let collection_info = details
                         .iter()
-                        .next().map(|item| item.unwrap())
+                        .next()
+                        .map(|item| item.unwrap())
                         .ok_or_else(|| "Collection not found".to_string())
                         .unwrap();
 
