@@ -132,8 +132,6 @@ s7forge clear-cache
 
 ### Caching
 
-Local caching improves performance:
-
 - Creator names and workshop items cached in `{executable_directory}/cache/`
 - Use `s7forge clear-cache` to clear all cached data
 
@@ -145,10 +143,6 @@ This project is licensed under the MIT License.
 
 - [steamworks.js](https://github.com/ceifa/steamworks.js) - Reference implementation (MIT License)
 - [steamworks-rs](https://github.com/Noxime/steamworks-rs) - Rust Steam API bindings
-
-## Project Status
-
-S7Forge is in active development. Current version focuses on Windows support with the Steam SDK.
 
 ## Contributing
 
