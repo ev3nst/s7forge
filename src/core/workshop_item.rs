@@ -47,7 +47,7 @@ pub mod workshop {
     use steamworks::FileType;
 
     use crate::core::localplayer::PlayerSteamId;
-    use crate::core::workshop::workshop::UgcItemVisibility;
+    use crate::core::workshop::UgcItemVisibility;
 
     use super::{capitalize, is_filtered_tag};
 
@@ -242,50 +242,37 @@ pub mod workshop {
         fn from_query_results(results: &steamworks::QueryResults, index: u32) -> Self {
             Self {
                 num_subscriptions: results
-                    .statistic(index, steamworks::UGCStatisticType::Subscriptions)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::Subscriptions),
                 num_favorites: results
-                    .statistic(index, steamworks::UGCStatisticType::Favorites)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::Favorites),
                 num_followers: results
-                    .statistic(index, steamworks::UGCStatisticType::Followers)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::Followers),
                 num_unique_subscriptions: results
-                    .statistic(index, steamworks::UGCStatisticType::UniqueSubscriptions)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::UniqueSubscriptions),
                 num_unique_favorites: results
-                    .statistic(index, steamworks::UGCStatisticType::UniqueFavorites)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::UniqueFavorites),
                 num_unique_followers: results
-                    .statistic(index, steamworks::UGCStatisticType::UniqueFollowers)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::UniqueFollowers),
                 num_unique_website_views: results
-                    .statistic(index, steamworks::UGCStatisticType::UniqueWebsiteViews)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::UniqueWebsiteViews),
                 report_score: results
-                    .statistic(index, steamworks::UGCStatisticType::Reports)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::Reports),
                 num_seconds_played: results
-                    .statistic(index, steamworks::UGCStatisticType::SecondsPlayed)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::SecondsPlayed),
                 num_playtime_sessions: results
-                    .statistic(index, steamworks::UGCStatisticType::PlaytimeSessions)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::PlaytimeSessions),
                 num_comments: results
-                    .statistic(index, steamworks::UGCStatisticType::Comments)
-                    .map(u64::from),
+                    .statistic(index, steamworks::UGCStatisticType::Comments),
                 num_seconds_played_during_time_period: results
                     .statistic(
                         index,
                         steamworks::UGCStatisticType::SecondsPlayedDuringTimePeriod,
-                    )
-                    .map(u64::from),
+                    ),
                 num_playtime_sessions_during_time_period: results
                     .statistic(
                         index,
                         steamworks::UGCStatisticType::PlaytimeSessionsDuringTimePeriod,
-                    )
-                    .map(u64::from),
+                    ),
             }
         }
     }
@@ -329,10 +316,10 @@ pub mod workshop {
                     .get_children(index)
                     .unwrap_or_default()
                     .into_iter()
-                    .map(|file_id| u64::from(file_id.0))
+                    .map(|file_id| file_id.0)
                     .collect();
 
-                let published_file_id = u64::from(item.published_file_id.0);
+                let published_file_id = item.published_file_id.0;
 
                 let file_type = match item.file_type {
                     FileType::Community => "Community",

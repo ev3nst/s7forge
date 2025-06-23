@@ -48,8 +48,7 @@ pub async fn collection_items(
                 Ok(details) => {
                     let collection_info = details
                         .iter()
-                        .next()
-                        .and_then(|item| Some(item.unwrap()))
+                        .next().map(|item| item.unwrap())
                         .ok_or_else(|| "Collection not found".to_string())
                         .unwrap();
 
@@ -77,7 +76,7 @@ pub async fn collection_items(
                                     .get_children(index as u32)
                                     .unwrap_or_default()
                                     .into_iter()
-                                    .map(|file_id| u64::from(file_id.0))
+                                    .map(|file_id| file_id.0)
                                     .collect::<Vec<u64>>(),
                                 None => Vec::new(),
                             })

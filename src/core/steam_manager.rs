@@ -3,7 +3,7 @@ use steamworks::Client;
 
 use crate::core::client::SteamState;
 
-pub static STEAM_MANAGER: Lazy<SteamManager> = Lazy::new(|| SteamManager::new());
+pub static STEAM_MANAGER: Lazy<SteamManager> = Lazy::new(SteamManager::new);
 
 pub struct SteamManager {
     steam_state: SteamState,

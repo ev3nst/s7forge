@@ -5,8 +5,9 @@ use crate::core::steam_install_paths::steam_install_paths;
 
 pub fn workshop_path(app_id: u32) -> Option<String> {
     match steam_install_paths() {
-        Ok(steam_install_paths) => {
-            for steam_install_path in steam_install_paths {
+        Ok(paths) => {
+            let re = regex::Regex::new(r#""(.*?)""#).unwrap();
+            for steam_install_path in paths {
                 let library_meta_file = Path::new(&steam_install_path)
                     .join("steamapps")
                     .join("libraryfolders.vdf");
@@ -20,7 +21,6 @@ pub fn workshop_path(app_id: u32) -> Option<String> {
                     Err(_) => continue,
                 };
 
-                let re = regex::Regex::new(r#""(.*?)""#).unwrap();
                 let matches: Vec<&str> = re.find_iter(&file_data).map(|m| m.as_str()).collect();
 
                 let mut library_folder_paths = Vec::new();
