@@ -23,3 +23,6 @@ tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread", "sync"] }
 once_cell = "1.20.2"
 clap = { version = "4.5", features = ["derive"] }
 winreg = "0.55.0"
+
+[build-dependencies]
+winres = "0.1"
