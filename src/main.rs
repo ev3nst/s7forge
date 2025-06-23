@@ -61,6 +61,14 @@ enum Commands {
         #[arg(long)]
         app_id: u32,
     },
+    SearchWorkshop {
+        #[arg(long)]
+        app_id: u32,
+        #[arg(long)]
+        query: String,
+        #[arg(long, default_value = "10")]
+        max_results: u32,
+    },
 }
 
 #[tokio::main]
@@ -110,6 +118,13 @@ async fn main() {
                 .await
                 .map(|items| serde_json::to_string_pretty(&items).unwrap())
         }
+        Commands::SearchWorkshop {
+            app_id,
+            query,
+            max_results,
+        } => commands::search_workshop::search_workshop(app_id, query, max_results)
+            .await
+            .map(|items| serde_json::to_string_pretty(&items).unwrap()),
     };
 
     match result {
