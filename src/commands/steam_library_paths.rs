@@ -18,7 +18,7 @@ pub fn steam_library_paths() -> Result<Vec<String>, String> {
         }
 
         let file_data = fs::read_to_string(&library_meta_file)
-            .map_err(|e| format!("Failed to read library metadata file: {}", e))?;
+            .map_err(|e| format!("Failed to read library metadata file: {:?}", e))?;
 
         let matches: Vec<&str> = re.find_iter(&file_data).map(|m| m.as_str()).collect();
 

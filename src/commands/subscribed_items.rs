@@ -12,7 +12,7 @@ pub async fn subscribed_items(steam_game_id: u32) -> Result<Vec<EnhancedWorkshop
         move || steam_client.ugc().subscribed_items()
     })
     .await
-    .map_err(|e| format!("Failed to fetch subscribed items: {}", e))?;
+    .map_err(|e| format!("Failed to fetch subscribed items: {:?}", e))?;
 
     let item_ids: Vec<u64> = subscribed_items.iter().map(|id| id.0).collect();
     if item_ids.is_empty() {

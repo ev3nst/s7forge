@@ -90,7 +90,7 @@ pub async fn check_item_download(steam_game_id: u32, item_id: u64) -> Result<Dow
                 steam_manager::run_callbacks(steam_game_id)?;
             }
             task_result = &mut fused_task => {
-                download_result = Some(task_result.map_err(|e| format!("Task error: {}", e))??);
+                download_result = Some(task_result.map_err(|e| format!("Task error: {:?}", e))??);
             }
         }
     }

@@ -40,7 +40,7 @@ pub async fn collection_items(
 
         let query_handle = ugc
             .query_items(vec![collection_id])
-            .map_err(|e| format!("Failed to create query handle: {}", e))?;
+            .map_err(|e| format!("Failed to create query handle: {:?}", e))?;
 
         query_handle
             .include_children(true)
@@ -116,7 +116,7 @@ pub async fn collection_items(
                 steam_manager::run_callbacks(steam_game_id)?;
             }
             task_result = &mut fused_task => {
-                collection_result = Some(task_result.map_err(|e| format!("Task error: {}", e))??);
+                collection_result = Some(task_result.map_err(|e| format!("Task error: {:?}", e))??);
             }
         }
     }

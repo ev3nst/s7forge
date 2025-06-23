@@ -7,9 +7,9 @@ use crate::core::steam_manager;
 use crate::core::workshop_item::workshop::{WorkshopItem, WorkshopItemsResult};
 use crate::utils::fetch_creator_names::fetch_creator_names;
 
-pub async fn search_workshop(
+pub async fn popular_items(
     steam_game_id: u32,
-    search_text: String,
+    period: String,
     page: u32,
 ) -> Result<Vec<EnhancedWorkshopItem>, String> {
     if page == 0 {
@@ -28,15 +28,28 @@ pub async fn search_workshop(
             consumer: AppId(steam_game_id),
         };
         let query_handle = ugc
-            .query_all(
-                UGCQueryType::RankedByTextSearch,
-                UGCType::Items,
-                app_ids,
-                page,
-            )
-            .map_err(|e| format!("Failed to create search query: {:?}", e))?;
-        query_handle
-            .set_search_text(&search_text)
+            .query_all(UGCQueryType::RankedByVote, UGCType::Items, app_ids, page)
+            .map_err(|e| format!("Failed to create popular items query: {:?}", e))?;
+
+        let configured_query = match period.as_str() {
+            "today" | "one-week" | "three-months" | "six-months" | "one-year" => {
+                let trend_days = match period.as_str() {
+                    "today" => 1,
+                    "one-week" => 7,
+                    "three-months" => 90,
+                    "six-months" => 180,
+                    "one-year" => 365,
+                    _ => 7,
+                };
+
+                ugc.query_all(UGCQueryType::RankedByTrend, UGCType::Items, app_ids, 1)
+                    .map_err(|e| format!("Failed to create trend query: {:?}", e))?
+                    .set_ranked_by_trend_days(trend_days)
+            }
+            _ => query_handle,
+        };
+
+        configured_query
             .set_return_metadata(true)
             .set_return_children(true)
             .set_return_additional_previews(true)
@@ -59,7 +72,9 @@ pub async fn search_workshop(
             }
 
             if start_time.elapsed() > timeout_duration {
-                return Err("Search operation timed out waiting for Steam response".to_string());
+                return Err(
+                    "Popular items operation timed out waiting for Steam response".to_string(),
+                );
             }
 
             std::thread::sleep(std::time::Duration::from_millis(10));
@@ -75,7 +90,7 @@ pub async fn search_workshop(
                 steam_manager::run_callbacks(steam_game_id)?;
             }
             task_result = &mut fused_task => {
-                search_result = Some(task_result.map_err(|e| format!("Task error: {:?}", e))??);
+                search_result = Some(task_result.map_err(|e| format!("Task error: {}", e))??);
                 break;
             }
         }

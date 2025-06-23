@@ -24,7 +24,7 @@ pub async fn fetch_creator_names(
 
     let cache_dir = get_cache_dir()?;
     fs::create_dir_all(&cache_dir)
-        .map_err(|e| format!("Failed to create cache directory: {}", e))?;
+        .map_err(|e| format!("Failed to create cache directory: {:?}", e))?;
 
     let cache_path = cache_dir.join("creator_names_cache.bin");
     let bincode_config = bincode::config::standard();
@@ -102,7 +102,7 @@ pub async fn fetch_creator_names(
             }
             task_result = &mut fused_creator_task => {
                 creator_result = Some(
-                    task_result.map_err(|e| format!("Creator task error: {}", e))?
+                    task_result.map_err(|e| format!("Creator task error: {:?}", e))?
                 );
                 break;
             }
@@ -120,7 +120,7 @@ pub async fn fetch_creator_names(
         names: cached_names.clone(),
     };
     let serialized_cache = bincode::encode_to_vec(&cache_struct, bincode_config)
-        .map_err(|e| format!("Failed to serialize creator name cache: {}", e))?;
+        .map_err(|e| format!("Failed to serialize creator name cache: {:?}", e))?;
     let _ = fs::write(&cache_path, serialized_cache);
     let result = creator_ids
         .into_iter()

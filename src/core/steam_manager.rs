@@ -20,7 +20,7 @@ impl SteamManager {
         if !self.steam_state.has_client(app_id) {
             self.steam_state.drop_all_clients();
             let (steam_client, single_client) = Client::init_app(app_id)
-                .map_err(|err| format!("Failed to initialize Steam client: {}", err))?;
+                .map_err(|err| format!("Failed to initialize Steam client: {:?}", err))?;
             self.steam_state
                 .set_clients(app_id, steam_client, single_client);
         }

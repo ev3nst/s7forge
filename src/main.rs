@@ -117,13 +117,53 @@ enum Commands {
         /// Search query text
         #[arg(long, help = "Text to search for in workshop items")]
         query: String,
-        /// Maximum number of results to return
+        /// Page number for pagination (1-based)
         #[arg(
             long,
-            default_value = "10",
-            help = "Maximum number of search results (default: 10)"
+            default_value = "1",
+            help = "Page number for pagination, starting from 1 (default: 1)"
         )]
-        max_results: u32,
+        page: u32,
+    },
+    /// Get most popular workshop items for a game
+    ///
+    /// Example: s7forge popular-items --app-id 548430 --max-results 20 --period one-year
+    #[command(name = "popular-items")]
+    PopularItems {
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
+        app_id: u32,
+        /// Time period for popularity ranking
+        #[arg(
+            long,
+            default_value = "all-time",
+            value_parser = ["today", "one-week", "three-months", "six-months", "one-year", "all-time"],
+            help = "Time period for popularity ranking: today, one-week, three-months, six-months, one-year, all-time (default: all-time)"
+        )]
+        period: String,
+        /// Page number for pagination (1-based)
+        #[arg(
+            long,
+            default_value = "1",
+            help = "Page number for pagination, starting from 1 (default: 1)"
+        )]
+        page: u32,
+    },
+    /// Get most recent workshop items for a game
+    ///
+    /// Example: s7forge recent-items --app-id 548430 --page 1
+    #[command(name = "recent-items")]
+    RecentItems {
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
+        app_id: u32,
+        /// Page number for pagination (1-based)
+        #[arg(
+            long,
+            default_value = "1",
+            help = "Page number for pagination, starting from 1 (default: 1)"
+        )]
+        page: u32,
     },
     /// Get the local workshop path for a game
     ///
@@ -189,10 +229,22 @@ async fn main() {
         Commands::SearchWorkshop {
             app_id,
             query,
-            max_results,
-        } => commands::search_workshop::search_workshop(app_id, query, max_results)
+            page,
+        } => commands::search_workshop::search_workshop(app_id, query, page)
             .await
             .map(|items| serde_json::to_string_pretty(&items).unwrap()),
+        Commands::PopularItems {
+            app_id,
+            period,
+            page,
+        } => commands::popular_items::popular_items(app_id, period, page)
+            .await
+            .map(|items| serde_json::to_string_pretty(&items).unwrap()),
+        Commands::RecentItems { app_id, page } => {
+            commands::recent_items::recent_items(app_id, page)
+                .await
+                .map(|items| serde_json::to_string_pretty(&items).unwrap())
+        }
         Commands::WorkshopPath { app_id } => match commands::workshop_path::workshop_path(app_id) {
             Some(path) => Ok(serde_json::to_string_pretty(&path).unwrap()),
             None => Err(format!("Workshop path not found for app ID {}", app_id)),
@@ -209,7 +261,7 @@ async fn main() {
             std::process::exit(0);
         }
         Err(error) => {
-            eprintln!("Error: {}", error);
+            eprintln!("Error: {:?}", error);
             std::process::exit(1);
         }
     }

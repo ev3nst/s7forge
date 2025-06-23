@@ -10,7 +10,7 @@ pub fn get_cache_dir() -> Result<PathBuf, String> {
 
     if !cache_dir.exists() {
         std::fs::create_dir_all(&cache_dir)
-            .map_err(|e| format!("Failed to create cache directory: {}", e))?;
+            .map_err(|e| format!("Failed to create cache directory: {:?}", e))?;
     }
 
     Ok(cache_dir)

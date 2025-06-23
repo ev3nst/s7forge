@@ -62,7 +62,7 @@ async fn subscribe_single_item(
             if let Ok(result) = rx_inner.try_recv() {
                 return result
                     .map(|_| true)
-                    .map_err(|e| format!("Steam API error: {}", e));
+                    .map_err(|e| format!("Steam API error: {:?}", e));
             }
 
             if start_time.elapsed() > timeout_duration {
@@ -82,7 +82,7 @@ async fn subscribe_single_item(
                 steam_manager::run_callbacks(steam_game_id)?;
             }
             task_result = &mut sub_task => {
-                result = Some(task_result.map_err(|e| format!("Task join error: {}", e))?);
+                result = Some(task_result.map_err(|e| format!("Task join error: {:?}", e))?);
                 break;
             }
         }

@@ -13,7 +13,7 @@ pub fn clear_cache() -> Result<String, String> {
     let mut errors = Vec::new();
 
     let entries =
-        fs::read_dir(&cache_dir).map_err(|e| format!("Failed to read cache directory: {}", e))?;
+        fs::read_dir(&cache_dir).map_err(|e| format!("Failed to read cache directory: {:?}", e))?;
 
     for entry in entries {
         match entry {

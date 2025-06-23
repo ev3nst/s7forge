@@ -42,7 +42,7 @@ pub async fn workshop_items(
 
     let cache_dir = get_cache_dir()?;
     fs::create_dir_all(&cache_dir)
-        .map_err(|e| format!("Failed to create cache directory: {}", e))?;
+        .map_err(|e| format!("Failed to create cache directory: {:?}", e))?;
 
     let cache_path = cache_dir.join("workshop_items_cache.bin");
     let bincode_config = bincode::config::standard();
@@ -95,7 +95,7 @@ pub async fn workshop_items(
         let (tx_inner, rx_inner) = std::sync::mpsc::channel();
         let query_handle = ugc
             .query_items(ids_to_fetch.iter().map(|id| PublishedFileId(*id)).collect())
-            .map_err(|e| format!("Failed to create query handle: {}", e))?;
+            .map_err(|e| format!("Failed to create query handle: {:?}", e))?;
 
         query_handle
             .include_children(true)
@@ -103,7 +103,7 @@ pub async fn workshop_items(
                 let _ = tx_inner.send(
                     fetch_result
                         .map(|query_results| WorkshopItemsResult::from_query_results(query_results))
-                        .map_err(|e| format!("Steam API error: {}", e)),
+                        .map_err(|e| format!("Steam API error: {:?}", e)),
                 );
             });
 
@@ -134,7 +134,7 @@ pub async fn workshop_items(
             }
             task_result = &mut fused_task => {
                 items_result = Some(
-                    task_result.map_err(|e| format!("Task error: {}", e))?
+                    task_result.map_err(|e| format!("Task error: {:?}", e))?
                 );
                 break;
             }
@@ -158,7 +158,7 @@ pub async fn workshop_items(
         items: cached_items.clone(),
     };
     let serialized_cache = bincode::encode_to_vec(&cache_struct, bincode_config)
-        .map_err(|e| format!("Failed to serialize cache: {}", e))?;
+        .map_err(|e| format!("Failed to serialize cache: {:?}", e))?;
     let _ = fs::write(&cache_path, serialized_cache);
 
     let final_items: Vec<WorkshopItem> = item_ids

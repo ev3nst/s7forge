@@ -7,9 +7,8 @@ use crate::core::steam_manager;
 use crate::core::workshop_item::workshop::{WorkshopItem, WorkshopItemsResult};
 use crate::utils::fetch_creator_names::fetch_creator_names;
 
-pub async fn search_workshop(
+pub async fn recent_items(
     steam_game_id: u32,
-    search_text: String,
     page: u32,
 ) -> Result<Vec<EnhancedWorkshopItem>, String> {
     if page == 0 {
@@ -27,16 +26,17 @@ pub async fn search_workshop(
             creator: AppId(steam_game_id),
             consumer: AppId(steam_game_id),
         };
+
         let query_handle = ugc
             .query_all(
-                UGCQueryType::RankedByTextSearch,
+                UGCQueryType::RankedByPublicationDate,
                 UGCType::Items,
                 app_ids,
                 page,
             )
-            .map_err(|e| format!("Failed to create search query: {:?}", e))?;
+            .map_err(|e| format!("Failed to create recent items query: {}", e))?;
+
         query_handle
-            .set_search_text(&search_text)
             .set_return_metadata(true)
             .set_return_children(true)
             .set_return_additional_previews(true)
@@ -45,7 +45,7 @@ pub async fn search_workshop(
                 let _ = tx_inner.send(
                     fetch_result
                         .map(|query_results| WorkshopItemsResult::from_query_results(query_results))
-                        .map_err(|e| format!("Steam API error: {:?}", e)),
+                        .map_err(|e| format!("Steam API error: {}", e)),
                 );
             });
 
@@ -59,7 +59,9 @@ pub async fn search_workshop(
             }
 
             if start_time.elapsed() > timeout_duration {
-                return Err("Search operation timed out waiting for Steam response".to_string());
+                return Err(
+                    "Recent items operation timed out waiting for Steam response".to_string(),
+                );
             }
 
             std::thread::sleep(std::time::Duration::from_millis(10));
@@ -75,7 +77,7 @@ pub async fn search_workshop(
                 steam_manager::run_callbacks(steam_game_id)?;
             }
             task_result = &mut fused_task => {
-                search_result = Some(task_result.map_err(|e| format!("Task error: {:?}", e))??);
+                search_result = Some(task_result.map_err(|e| format!("Task error: {}", e))??);
                 break;
             }
         }
