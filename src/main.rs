@@ -57,6 +57,10 @@ enum Commands {
         #[arg(long)]
         item_id: u64,
     },
+    GetSubscribedItems {
+        #[arg(long)]
+        app_id: u32,
+    },
 }
 
 #[tokio::main]
@@ -65,7 +69,8 @@ async fn main() {
 
     let result = match cli.command {
         Commands::CheckItemDownload { app_id, item_id } => {
-            commands::check_item_download::check_item_download(app_id, item_id).await
+            commands::check_item_download::check_item_download(app_id, item_id)
+                .await
                 .map(|info| serde_json::to_string_pretty(&info).unwrap())
         }
         Commands::FetchCreatorNames {
@@ -73,28 +78,37 @@ async fn main() {
             creator_ids,
         } => {
             let steam_ids: Vec<SteamId> = creator_ids.into_iter().map(SteamId::from_raw).collect();
-            commands::fetch_creator_names::fetch_creator_names(steam_ids, app_id).await
+            commands::fetch_creator_names::fetch_creator_names(steam_ids, app_id)
+                .await
                 .map(|names| serde_json::to_string_pretty(&names).unwrap())
         }
         Commands::GetCollectionItems { app_id, item_id } => {
-            commands::get_collection_items::get_collection_items(app_id, item_id).await
+            commands::get_collection_items::get_collection_items(app_id, item_id)
+                .await
                 .map(|items| serde_json::to_string_pretty(&items).unwrap())
         }
         Commands::GetWorkshopItems { app_id, item_ids } => {
-            commands::get_workshop_items::get_workshop_items(app_id, item_ids).await
+            commands::get_workshop_items::get_workshop_items(app_id, item_ids)
+                .await
                 .map(|items| serde_json::to_string_pretty(&items).unwrap())
         }
-        Commands::Subscribe { app_id, item_id } => {
-            commands::subscribe::subscribe(app_id, item_id).await
-                .map(|success| serde_json::to_string_pretty(&success).unwrap())
-        }
+        Commands::Subscribe { app_id, item_id } => commands::subscribe::subscribe(app_id, item_id)
+            .await
+            .map(|success| serde_json::to_string_pretty(&success).unwrap()),
         Commands::Unsubscribe { app_id, item_id } => {
-            commands::unsubscribe::unsubscribe(app_id, item_id).await
+            commands::unsubscribe::unsubscribe(app_id, item_id)
+                .await
                 .map(|success| serde_json::to_string_pretty(&success).unwrap())
         }
         Commands::UpdateWorkshopItem { app_id, item_id } => {
-            commands::update_workshop_item::update_workshop_item(app_id, item_id).await
+            commands::update_workshop_item::update_workshop_item(app_id, item_id)
+                .await
                 .map(|_| "\"Workshop item update completed successfully\"".to_string())
+        }
+        Commands::GetSubscribedItems { app_id } => {
+            commands::subscribed_items::get_subscribed_items(app_id)
+                .await
+                .map(|items| serde_json::to_string_pretty(&items).unwrap())
         }
     };
 
