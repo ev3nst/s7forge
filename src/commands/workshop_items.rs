@@ -32,7 +32,7 @@ impl EnhancedWorkshopItem {
     }
 }
 
-pub async fn get_workshop_items(
+pub async fn workshop_items(
     steam_game_id: u32,
     item_ids: Vec<u64>,
 ) -> Result<Vec<EnhancedWorkshopItem>, String> {

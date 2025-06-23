@@ -3,7 +3,7 @@ use serde::Serialize;
 use steamworks::PublishedFileId;
 use tokio::sync::mpsc;
 
-use super::get_workshop_items::{EnhancedWorkshopItem, get_workshop_items};
+use super::workshop_items::{EnhancedWorkshopItem, workshop_items};
 use crate::core::steam_manager;
 
 #[derive(Debug, Serialize)]
@@ -24,7 +24,7 @@ pub struct CollectionDetails {
     pub items: Vec<EnhancedWorkshopItem>,
 }
 
-pub async fn get_collection_items(
+pub async fn collection_items(
     steam_game_id: u32,
     item_id: u64,
 ) -> Result<CollectionDetails, String> {
@@ -122,7 +122,7 @@ pub async fn get_collection_items(
     }
 
     let (collection_info, item_ids) = collection_result.unwrap();
-    let items = get_workshop_items(steam_game_id, item_ids).await?;
+    let items = workshop_items(steam_game_id, item_ids).await?;
 
     Ok(CollectionDetails {
         details: collection_info,

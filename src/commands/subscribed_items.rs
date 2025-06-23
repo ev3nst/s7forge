@@ -1,10 +1,10 @@
 use steamworks::PublishedFileId;
 use tokio::task;
 
-use crate::commands::get_workshop_items::{EnhancedWorkshopItem, get_workshop_items};
+use crate::commands::workshop_items::{EnhancedWorkshopItem, workshop_items};
 use crate::core::steam_manager;
 
-pub async fn get_subscribed_items(steam_game_id: u32) -> Result<Vec<EnhancedWorkshopItem>, String> {
+pub async fn subscribed_items(steam_game_id: u32) -> Result<Vec<EnhancedWorkshopItem>, String> {
     let steam_client = steam_manager::initialize_client(steam_game_id).await?;
 
     let subscribed_items: Vec<PublishedFileId> = task::spawn_blocking({
@@ -19,5 +19,5 @@ pub async fn get_subscribed_items(steam_game_id: u32) -> Result<Vec<EnhancedWork
         return Ok(Vec::new());
     }
 
-    get_workshop_items(steam_game_id, item_ids).await
+    workshop_items(steam_game_id, item_ids).await
 }

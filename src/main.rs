@@ -27,13 +27,13 @@ enum Commands {
         #[arg(long, value_delimiter = ',')]
         creator_ids: Vec<u64>,
     },
-    GetCollectionItems {
+    CollectionItems {
         #[arg(long)]
         app_id: u32,
         #[arg(long)]
         item_id: u64,
     },
-    GetWorkshopItems {
+    WorkshopItems {
         #[arg(long)]
         app_id: u32,
         #[arg(long, value_delimiter = ',')]
@@ -57,7 +57,7 @@ enum Commands {
         #[arg(long)]
         item_id: u64,
     },
-    GetSubscribedItems {
+    SubscribedItems {
         #[arg(long)]
         app_id: u32,
     },
@@ -69,6 +69,11 @@ enum Commands {
         #[arg(long, default_value = "10")]
         max_results: u32,
     },
+    WorkshopPath {
+        #[arg(long)]
+        app_id: u32,
+    },
+    SteamLibraryPaths,
 }
 
 #[tokio::main]
@@ -90,13 +95,13 @@ async fn main() {
                 .await
                 .map(|names| serde_json::to_string_pretty(&names).unwrap())
         }
-        Commands::GetCollectionItems { app_id, item_id } => {
-            commands::get_collection_items::get_collection_items(app_id, item_id)
+        Commands::CollectionItems { app_id, item_id } => {
+            commands::collection_items::collection_items(app_id, item_id)
                 .await
                 .map(|items| serde_json::to_string_pretty(&items).unwrap())
         }
-        Commands::GetWorkshopItems { app_id, item_ids } => {
-            commands::get_workshop_items::get_workshop_items(app_id, item_ids)
+        Commands::WorkshopItems { app_id, item_ids } => {
+            commands::workshop_items::workshop_items(app_id, item_ids)
                 .await
                 .map(|items| serde_json::to_string_pretty(&items).unwrap())
         }
@@ -113,8 +118,8 @@ async fn main() {
                 .await
                 .map(|_| "\"Workshop item update completed successfully\"".to_string())
         }
-        Commands::GetSubscribedItems { app_id } => {
-            commands::subscribed_items::get_subscribed_items(app_id)
+        Commands::SubscribedItems { app_id } => {
+            commands::subscribed_items::subscribed_items(app_id)
                 .await
                 .map(|items| serde_json::to_string_pretty(&items).unwrap())
         }
@@ -125,6 +130,12 @@ async fn main() {
         } => commands::search_workshop::search_workshop(app_id, query, max_results)
             .await
             .map(|items| serde_json::to_string_pretty(&items).unwrap()),
+        Commands::WorkshopPath { app_id } => match commands::workshop_path::workshop_path(app_id) {
+            Some(path) => Ok(serde_json::to_string_pretty(&path).unwrap()),
+            None => Err(format!("Workshop path not found for app ID {}", app_id)),
+        },
+        Commands::SteamLibraryPaths => commands::steam_library_paths::steam_library_paths()
+            .map(|paths| serde_json::to_string_pretty(&paths).unwrap()),
     };
 
     match result {

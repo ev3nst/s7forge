@@ -3,7 +3,7 @@ use steamworks::{AppIDs, AppId, UGCQueryType, UGCType};
 use tokio::sync::mpsc;
 
 use crate::commands::fetch_creator_names::fetch_creator_names;
-use crate::commands::get_workshop_items::EnhancedWorkshopItem;
+use crate::commands::workshop_items::EnhancedWorkshopItem;
 use crate::core::steam_manager;
 use crate::core::workshop_item::workshop::{WorkshopItem, WorkshopItemsResult};
 
