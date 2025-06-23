@@ -1,5 +1,6 @@
-use crate::utils::get_cache_dir::get_cache_dir;
 use std::fs;
+
+use crate::utils::get_cache_dir::get_cache_dir;
 
 pub fn clear_cache() -> Result<String, String> {
     let cache_dir = get_cache_dir()?;

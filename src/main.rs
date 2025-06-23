@@ -3,7 +3,6 @@ mod core;
 mod utils;
 
 use clap::{Parser, Subcommand};
-use steamworks::SteamId;
 
 #[derive(Parser)]
 #[command(name = "s7forge")]
@@ -20,12 +19,6 @@ enum Commands {
         app_id: u32,
         #[arg(long)]
         item_id: u64,
-    },
-    FetchCreatorNames {
-        #[arg(long)]
-        app_id: u32,
-        #[arg(long, value_delimiter = ',')]
-        creator_ids: Vec<u64>,
     },
     CollectionItems {
         #[arg(long)]
@@ -86,15 +79,6 @@ async fn main() {
             commands::check_item_download::check_item_download(app_id, item_id)
                 .await
                 .map(|info| serde_json::to_string_pretty(&info).unwrap())
-        }
-        Commands::FetchCreatorNames {
-            app_id,
-            creator_ids,
-        } => {
-            let steam_ids: Vec<SteamId> = creator_ids.into_iter().map(SteamId::from_raw).collect();
-            commands::fetch_creator_names::fetch_creator_names(steam_ids, app_id)
-                .await
-                .map(|names| serde_json::to_string_pretty(&names).unwrap())
         }
         Commands::CollectionItems { app_id, item_id } => {
             commands::collection_items::collection_items(app_id, item_id)

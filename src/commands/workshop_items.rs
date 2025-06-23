@@ -6,9 +6,9 @@ use rustc_hash::FxHashMap;
 use serde::Serialize;
 use steamworks::{PublishedFileId, SteamId};
 
-use crate::commands::fetch_creator_names::fetch_creator_names;
 use crate::core::steam_manager;
 use crate::core::workshop_item::workshop::{WorkshopItem, WorkshopItemsResult};
+use crate::utils::fetch_creator_names::fetch_creator_names;
 use crate::utils::get_cache_dir::get_cache_dir;
 
 #[derive(Debug, Encode, Decode)]
