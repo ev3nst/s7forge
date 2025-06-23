@@ -1,5 +1,3 @@
-# S7Forge
-
 A simple CLI utility for interacting with the Steam Workshop API. S7Forge provides basic commands for managing Steam Workshop content with local caching for improved performance.
 
 ## Installation
