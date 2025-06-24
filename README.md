@@ -97,9 +97,6 @@ s7forge steam-library-paths
 
 # Clear cache
 s7forge clear-cache
-
-# Discover available workshop tags
-s7forge discover-tags --app-id 548430
 ```
 
 ### Example Workshop Item Output
