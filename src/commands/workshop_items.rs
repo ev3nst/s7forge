@@ -16,7 +16,7 @@ pub struct WorkshopItemCache {
     pub items: FxHashMap<u64, WorkshopItem>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Encode, Decode)]
 pub struct EnhancedWorkshopItem {
     #[serde(flatten)]
     pub workshop_item: WorkshopItem,

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-// Modified by Burak Kartal on [01/05/2025]
+// Modified by Burak Kartal on [24/06/2025]
 
 use bincode::{Decode, Encode};
 use serde::Serialize;

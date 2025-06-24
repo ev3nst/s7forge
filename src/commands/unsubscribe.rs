@@ -9,7 +9,6 @@ use crate::core::steam_manager;
 pub struct UnsubscribeResult {
     pub item_id: u64,
     pub success: bool,
-    pub error: Option<String>,
 }
 
 pub async fn unsubscribe(
@@ -22,16 +21,13 @@ pub async fn unsubscribe(
     for item_id in item_ids {
         let result = unsubscribe_single_item(&steam_client, steam_game_id, item_id).await;
         match result {
-            Ok(success) => results.push(UnsubscribeResult {
-                item_id,
-                success,
-                error: None,
-            }),
-            Err(error) => results.push(UnsubscribeResult {
-                item_id,
-                success: false,
-                error: Some(error),
-            }),
+            Ok(success) => results.push(UnsubscribeResult { item_id, success }),
+            Err(error) => {
+                return Err(format!(
+                    "Failed to unsubscribe from item {}: {}",
+                    item_id, error
+                ));
+            }
         }
     }
 

@@ -9,7 +9,6 @@ use crate::core::steam_manager;
 pub struct SubscribeResult {
     pub item_id: u64,
     pub success: bool,
-    pub error: Option<String>,
 }
 
 pub async fn subscribe(
@@ -22,16 +21,13 @@ pub async fn subscribe(
     for item_id in item_ids {
         let result = subscribe_single_item(&steam_client, steam_game_id, item_id).await;
         match result {
-            Ok(success) => results.push(SubscribeResult {
-                item_id,
-                success,
-                error: None,
-            }),
-            Err(error) => results.push(SubscribeResult {
-                item_id,
-                success: false,
-                error: Some(error),
-            }),
+            Ok(success) => results.push(SubscribeResult { item_id, success }),
+            Err(error) => {
+                return Err(format!(
+                    "Failed to subscribe to item {}: {}",
+                    item_id, error
+                ));
+            }
         }
     }
 

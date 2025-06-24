@@ -42,6 +42,15 @@ pub fn run_command(args: &[&str]) -> std::process::Output {
         .expect("Failed to execute command")
 }
 
+pub fn run_search_workshop_command(args: &[&str]) -> std::process::Output {
+    let clear_cache_output = run_command(&["clear-cache"]);
+    if !clear_cache_output.status.success() {
+        eprintln!("Warning: Failed to clear cache before search-workshop test");
+    }
+
+    run_command(args)
+}
+
 pub fn is_steam_available() -> bool {
     let config = TestConfig::load();
     let output = run_command(&["workshop-path", "--app-id", &config.app_id.to_string()]);

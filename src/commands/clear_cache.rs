@@ -9,8 +9,6 @@ pub struct ClearCacheResult {
     pub message: String,
     pub files_cleared: usize,
     pub files: Vec<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub errors: Option<Vec<String>>,
 }
 
 pub fn clear_cache() -> Result<ClearCacheResult, String> {
@@ -22,7 +20,6 @@ pub fn clear_cache() -> Result<ClearCacheResult, String> {
             message: "Cache directory does not exist, nothing to clear".to_string(),
             files_cleared: 0,
             files: Vec::new(),
-            errors: None,
         });
     }
 
@@ -68,7 +65,6 @@ pub fn clear_cache() -> Result<ClearCacheResult, String> {
             message: "Cache directory was already empty".to_string(),
             files_cleared: 0,
             files: Vec::new(),
-            errors: None,
         }
     } else {
         ClearCacheResult {
@@ -76,7 +72,6 @@ pub fn clear_cache() -> Result<ClearCacheResult, String> {
             message: format!("Successfully cleared {} cache files", cleared_files.len()),
             files_cleared: cleared_files.len(),
             files: cleared_files,
-            errors: None,
         }
     };
 

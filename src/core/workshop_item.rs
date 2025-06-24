@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-// Modified by Burak Kartal on [01/05/2025]
+// Modified by Burak Kartal on [24/06/2025]
 
 use std::collections::HashSet;
 
@@ -289,7 +289,6 @@ pub mod workshop {
             }
         }
     }
-
     #[derive(Debug, Clone, Serialize, Encode, Decode)]
     pub struct WorkshopItemStatistic {
         pub num_subscriptions: Option<u64>, //   0	gets the number of subscriptions.
@@ -339,7 +338,6 @@ pub mod workshop {
             }
         }
     }
-
     #[derive(Debug, Clone, Serialize, Encode, Decode)]
     pub struct WorkshopItem {
         pub published_file_id: u64,

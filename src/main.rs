@@ -109,8 +109,8 @@ enum Commands {
     /// Search workshop content by text query with flexible sorting options
     ///
     /// Example: s7forge search-workshop --app-id 548430 --query "tank" --sort-by relevance
-    /// Example: s7forge search-workshop --app-id 548430 --sort-by popular --period one-year --tags "mod,weapon"
-    /// Example: s7forge search-workshop --app-id 548430 --sort-by trending --period one-week
+    /// Example: s7forge search-workshop --app-id 548430 --sort-by recent --tags "mod,weapon"
+    /// Example: s7forge search-workshop --app-id 548430 --sort-by popular --period one-week
     #[command(name = "search-workshop")]
     SearchWorkshop {
         /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
@@ -127,18 +127,17 @@ enum Commands {
         #[arg(
             long,
             default_value = "relevance",
-            value_parser = ["relevance", "popular", "recent", "trending", "most-subscribed", "recently-updated"],
-            help = "Sort results by: relevance (text search), popular (by votes), recent (by publication date), trending (recent popularity), most-subscribed (by total subscriptions), recently-updated (by last update date)"
+            value_parser = ["relevance", "recent", "popular", "most-subscribed", "recently-updated"],
+            help = "Sort results by: relevance, recent, popular, most-subscribed, recently-updated"
         )]
         sort_by: String,
-        /// Time period filter for supported sort types
+        /// Time period filter for supported sort types (popular only)
         #[arg(
             long,
-            default_value = "one-week",
             value_parser = ["today", "one-week", "three-months", "six-months", "one-year"],
-            help = "Time period filter: today, one-week, three-months, six-months, one-year (applies to trending, popular, most-subscribed sorts)"
+            help = "Time period filter: today, one-week, three-months, six-months, one-year (only applies to 'popular' sort)"
         )]
-        period: String,
+        period: Option<String>,
         /// Page number for pagination (1-based)
         #[arg(
             long,

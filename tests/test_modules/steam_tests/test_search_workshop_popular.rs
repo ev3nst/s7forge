@@ -1,10 +1,10 @@
-use crate::test_modules::utils::{TestConfig, assert_valid_json, run_command, steam_test_or_skip};
+use crate::test_modules::utils::{TestConfig, assert_valid_json, run_search_workshop_command, steam_test_or_skip};
 
 #[test]
 fn test_search_workshop_popular() {
     steam_test_or_skip(|| {
         let config = TestConfig::load();
-        let output = run_command(&[
+        let output = run_search_workshop_command(&[
             "search-workshop",
             "--app-id",
             &config.app_id.to_string(),
