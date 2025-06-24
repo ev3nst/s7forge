@@ -7,6 +7,9 @@ fn main() {
         res.set("CompanyName", "Burak Kartal");
         res.set("FileVersion", "1.0.0");
         res.set("ProductVersion", "1.0.0");
+        res.set("LegalCopyright", "MIT License - Open Source Software");
+        res.set("OriginalFilename", "s7forge.exe");
+        res.set("InternalName", "s7forge");
         res.compile().expect("Failed to compile Windows resources");
     }
 }
