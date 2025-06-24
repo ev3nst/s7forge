@@ -1,5 +1,4 @@
-use crate::test_modules::utils::{assert_valid_json, run_command, steam_test_or_skip};
-use s7forge::test_config::TestConfig;
+use crate::test_modules::utils::{assert_valid_json, run_command, steam_test_or_skip, TestConfig};
 
 #[test]
 fn test_search_workshop_recent() {

@@ -1,5 +1,4 @@
-use crate::test_modules::utils::{assert_valid_json, run_command};
-use s7forge::test_config::TestConfig;
+use crate::test_modules::utils::{assert_valid_json, run_command, TestConfig};
 
 #[test]
 fn test_workshop_path_non_steam() {

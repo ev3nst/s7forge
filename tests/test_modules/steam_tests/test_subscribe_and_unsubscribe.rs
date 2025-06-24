@@ -1,7 +1,6 @@
 use crate::test_modules::utils::{
-    assert_json_array, is_item_subscribed, run_command, steam_test_or_skip,
+    assert_json_array, is_item_subscribed, run_command, steam_test_or_skip, TestConfig,
 };
-use s7forge::test_config::TestConfig;
 use std::time::Duration;
 
 // WARNING: These tests actually modify Steam subscriptions!

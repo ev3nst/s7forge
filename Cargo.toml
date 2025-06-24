@@ -33,11 +33,6 @@ tokio-test = "0.4.4"
 name = "integration_tests"
 path = "tests/integration_tests.rs"
 
-# Disable automatic unit test discovery
-[lib]
-test = false
-doctest = false
-
 [[bin]]
 name = "s7forge"
 test = false
