@@ -4,7 +4,7 @@ use steamworks::{ItemState, PublishedFileId};
 
 use crate::core::steam_manager;
 
-pub async fn update_workshop_item(steam_game_id: u32, item_id: u64) -> Result<(), String> {
+pub async fn download_workshop_item(steam_game_id: u32, item_id: u64) -> Result<(), String> {
     let steam_client = steam_manager::initialize_client(steam_game_id).await?;
 
     let published_file_id = PublishedFileId(item_id);

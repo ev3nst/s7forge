@@ -85,16 +85,16 @@ enum Commands {
         )]
         item_ids: Vec<u64>,
     },
-    /// Update a workshop item you own
+    /// Download a workshop item you own
     ///
-    /// Example: s7forge update-workshop-item --app-id 548430 --item-id 123456789
-    #[command(name = "update-workshop-item")]
-    UpdateWorkshopItem {
+    /// Example: s7forge download-workshop-item --app-id 548430 --item-id 123456789
+    #[command(name = "download-workshop-item")]
+    DownloadWorkshopItem {
         /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
         #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
-        /// Workshop item ID to update
-        #[arg(long, help = "Workshop item ID to update")]
+        /// Workshop item ID to download
+        #[arg(long, help = "Workshop item ID to download")]
         item_id: u64,
     },
     /// List all items you're subscribed to for a game
@@ -213,10 +213,10 @@ async fn main() {
                 .await
                 .map(|results| serde_json::to_string_pretty(&results).unwrap())
         }
-        Commands::UpdateWorkshopItem { app_id, item_id } => {
-            commands::update_workshop_item::update_workshop_item(app_id, item_id)
+        Commands::DownloadWorkshopItem { app_id, item_id } => {
+            commands::download_workshop_item::download_workshop_item(app_id, item_id)
                 .await
-                .map(|_| "\"Workshop item update completed successfully\"".to_string())
+                .map(|_| "\"Workshop item download completed successfully\"".to_string())
         }
         Commands::SubscribedItems { app_id } => {
             commands::subscribed_items::subscribed_items(app_id)

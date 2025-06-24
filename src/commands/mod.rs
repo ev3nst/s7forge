@@ -7,6 +7,6 @@ pub mod steam_library_paths;
 pub mod subscribe;
 pub mod subscribed_items;
 pub mod unsubscribe;
-pub mod update_workshop_item;
+pub mod download_workshop_item;
 pub mod workshop_items;
 pub mod workshop_path;
