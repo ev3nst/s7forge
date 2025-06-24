@@ -61,11 +61,8 @@ s7forge search-workshop --app-id 548430 --sort-by popular --period one-week --pa
 # Recent items
 s7forge search-workshop --app-id 548430 --sort-by recent --page 1
 
-# Trending items
-s7forge search-workshop --app-id 548430 --sort-by trending --period one-week --page 1
-
 # Most subscribed items
-s7forge search-workshop --app-id 548430 --sort-by most-subscribed --period one-year --page 1
+s7forge search-workshop --app-id 548430 --sort-by most-subscribed --page 1
 
 # Recently updated items
 s7forge search-workshop --app-id 548430 --sort-by recently-updated --page 1
@@ -81,8 +78,7 @@ s7forge discover-tags --app-id 548430
 - `relevance` - Text search relevance (requires query text)
 - `popular` - Most voted items (supports time periods)
 - `recent` - Recently published items
-- `trending` - Trending items (supports time periods)
-- `most-subscribed` - Most subscribed items (supports time periods)
+- `most-subscribed` - Most subscribed items
 - `recently-updated` - Recently updated items
 
 **Time Periods:** `today`, `one-week`, `three-months`, `six-months`, `one-year`
