@@ -2,11 +2,11 @@ use std::fs;
 use std::path::Path;
 
 use crate::core::steam_install_paths::steam_install_paths;
+use crate::utils::extract_quoted_strings::extract_quoted_strings;
 
 pub fn workshop_path(app_id: u32) -> Option<String> {
     match steam_install_paths() {
         Ok(paths) => {
-            let re = regex::Regex::new(r#""(.*?)""#).unwrap();
             for steam_install_path in paths {
                 let library_meta_file = Path::new(&steam_install_path)
                     .join("steamapps")
@@ -21,13 +21,13 @@ pub fn workshop_path(app_id: u32) -> Option<String> {
                     Err(_) => continue,
                 };
 
-                let matches: Vec<&str> = re.find_iter(&file_data).map(|m| m.as_str()).collect();
+                let quoted_strings = extract_quoted_strings(&file_data);
 
                 let mut library_folder_paths = Vec::new();
-                for i in 0..matches.len() {
-                    let match_str = matches[i].replace("\"", "");
-                    if match_str == "path" && i + 1 < matches.len() {
-                        let lib_path = Path::new(&matches[i + 1].replace("\"", ""))
+                for i in 0..quoted_strings.len() {
+                    let current_string = &quoted_strings[i];
+                    if current_string == "path" && i + 1 < quoted_strings.len() {
+                        let lib_path = Path::new(&quoted_strings[i + 1])
                             .to_str()
                             .unwrap_or("")
                             .to_string();

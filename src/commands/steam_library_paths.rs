@@ -1,12 +1,11 @@
-use regex::Regex;
 use std::{fs, path::Path};
 
 use crate::core::steam_install_paths::steam_install_paths;
+use crate::utils::extract_quoted_strings::extract_quoted_strings;
 
 pub fn steam_library_paths() -> Result<Vec<String>, String> {
     let steam_install_paths = steam_install_paths()?;
     let mut library_folder_paths = Vec::new();
-    let re = Regex::new(r#""(.*?)""#).unwrap();
 
     for steam_install_path in steam_install_paths {
         let library_meta_file = Path::new(&steam_install_path)
@@ -20,16 +19,16 @@ pub fn steam_library_paths() -> Result<Vec<String>, String> {
         let file_data = fs::read_to_string(&library_meta_file)
             .map_err(|e| format!("Failed to read library metadata file: {:?}", e))?;
 
-        let matches: Vec<&str> = re.find_iter(&file_data).map(|m| m.as_str()).collect();
+        let quoted_strings = extract_quoted_strings(&file_data);
 
-        for i in 0..matches.len() {
-            let match_str = matches[i].replace("\"", "");
-            if match_str == "path" && i + 1 < matches.len() {
-                let lib_path = Path::new(&matches[i + 1].replace("\"", ""))
+        for i in 0..quoted_strings.len() {
+            let current_string = &quoted_strings[i];
+            if current_string == "path" && i + 1 < quoted_strings.len() {
+                let lib_path = Path::new(&quoted_strings[i + 1])
                     .to_str()
                     .unwrap_or("")
                     .to_string();
-                library_folder_paths.push(lib_path.replace("\\\\", "\\"));
+                library_folder_paths.push(lib_path);
             }
         }
     }

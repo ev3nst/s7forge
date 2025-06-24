@@ -24,8 +24,6 @@
 
 use std::collections::HashSet;
 
-use regex::Regex;
-
 fn capitalize(s: String) -> String {
     let mut chars = s.chars();
     match chars.next() {
@@ -34,11 +32,82 @@ fn capitalize(s: String) -> String {
     }
 }
 
+fn is_version_tag(tag: &str) -> bool {
+    let tag = tag.trim();
+    if tag.is_empty()
+        || !tag
+            .chars()
+            .next()
+            .unwrap_or(' ')
+            .to_ascii_lowercase()
+            .is_ascii_alphabetic()
+    {
+        return false;
+    }
+
+    let first_char = tag.chars().next().unwrap().to_ascii_lowercase();
+    if first_char != 'v' && first_char != 'e' {
+        return false;
+    }
+
+    let rest = &tag[1..];
+    let cleaned: String = rest.chars().filter(|c| !c.is_whitespace()).collect();
+    if cleaned.is_empty() {
+        return false;
+    }
+
+    is_valid_version_string(&cleaned)
+}
+
+fn is_valid_version_string(s: &str) -> bool {
+    if s.is_empty() {
+        return false;
+    }
+
+    if s.starts_with('.') {
+        return false;
+    }
+
+    let mut chars = s.chars().peekable();
+    let mut has_any_digits = false;
+
+    loop {
+        while let Some(&ch) = chars.peek() {
+            if ch.is_ascii_digit() {
+                chars.next();
+                has_any_digits = true;
+            } else {
+                break;
+            }
+        }
+
+        match chars.peek() {
+            None => break,
+            Some('.') => {
+                chars.next();
+
+                if let Some(&next_ch) = chars.peek() {
+                    if next_ch == 'X' || next_ch == 'x' {
+                        chars.next();
+                        return chars.next().is_none() && has_any_digits;
+                    }
+                }
+            }
+            Some('X') | Some('x') => {
+                chars.next();
+                return chars.next().is_none() && has_any_digits;
+            }
+            _ => return false,
+        }
+    }
+
+    has_any_digits
+}
+
 fn is_filtered_tag(tag: &str) -> bool {
-    let version_regex = Regex::new(r"^[VvEe]\s*\d+(\.\d+)*(\.[Xx])?$").unwrap();
     let excluded_tags: HashSet<&str> = ["mod", "Singleplayer", "Native"].iter().cloned().collect();
 
-    version_regex.is_match(tag) || excluded_tags.contains(tag)
+    excluded_tags.contains(tag) || is_version_tag(tag)
 }
 
 pub mod workshop {
