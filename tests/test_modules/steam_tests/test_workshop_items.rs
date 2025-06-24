@@ -1,4 +1,4 @@
-use crate::test_modules::utils::{assert_valid_json, run_command, steam_test_or_skip, TestConfig};
+use crate::test_modules::utils::{TestConfig, assert_valid_json, run_command, steam_test_or_skip};
 
 #[test]
 fn test_workshop_items() {

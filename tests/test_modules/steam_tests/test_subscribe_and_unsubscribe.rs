@@ -1,5 +1,5 @@
 use crate::test_modules::utils::{
-    assert_json_array, is_item_subscribed, run_command, steam_test_or_skip, TestConfig,
+    TestConfig, assert_json_array, is_item_subscribed, run_command, steam_test_or_skip,
 };
 use std::time::Duration;
 
