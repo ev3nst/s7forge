@@ -86,8 +86,8 @@ s7forge discover-tags --app-id 548430
 #### Management
 
 ```bash
-# Update your workshop item
-s7forge update-workshop-item --app-id 548430 --item-id 123456789
+# Re-Download (Trigger forced update) a workshop item
+s7forge download-workshop-item --app-id 548430 --item-id 123456789
 
 # Get workshop directory path
 s7forge workshop-path --app-id 548430
