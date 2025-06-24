@@ -19,7 +19,7 @@ cargo build --release
 
 ## Usage
 
-Most commands require `--app-id` parameter. Use `s7forge <command> --help` for detailed help.
+Most commands require `--app-id` parameter. Use `s7forge help` and `s7forge <command> --help` for detailed help.
 
 ### Commands
 
