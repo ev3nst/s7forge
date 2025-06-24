@@ -1,4 +1,4 @@
-A CLI utility for interacting with the Steam Workshop API. Provides commands for managing Steam Workshop content with local caching.
+A CLI utility for Steam Workshop operations via Steam SDK, designed as a sidecar binary for delegating Steam integration tasks.
 
 ## Installation
 

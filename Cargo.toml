@@ -2,7 +2,7 @@
 name = "s7forge"
 version = "0.1.0"
 publish = false
-description = "Steamworks utility wrapper."
+description = "A CLI utility for Steam Workshop operations via Steam SDK, designed as a sidecar binary for delegating Steam integration tasks."
 authors = ["Burak Kartal"]
 edition = "2024"
 
