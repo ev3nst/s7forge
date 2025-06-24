@@ -23,6 +23,24 @@ tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread", "sync"] }
 once_cell = "1.20.2"
 clap = { version = "4.5", features = ["derive"] }
 winreg = "0.55.0"
+dotenv = "0.15.0"
+
+[dev-dependencies]
+tokio-test = "0.4.4"
+
+# Disable unit tests since we only use integration tests
+[[test]]
+name = "integration_tests"
+path = "tests/integration_tests.rs"
+
+# Disable automatic unit test discovery
+[lib]
+test = false
+doctest = false
+
+[[bin]]
+name = "s7forge"
+test = false
 
 [build-dependencies]
 winres = "0.1"

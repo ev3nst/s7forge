@@ -1,12 +1,29 @@
+use serde::{Deserialize, Serialize};
 use std::fs;
 
 use crate::utils::get_cache_dir::get_cache_dir;
 
-pub fn clear_cache() -> Result<String, String> {
+#[derive(Serialize, Deserialize)]
+pub struct ClearCacheResult {
+    pub success: bool,
+    pub message: String,
+    pub files_cleared: usize,
+    pub files: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub errors: Option<Vec<String>>,
+}
+
+pub fn clear_cache() -> Result<ClearCacheResult, String> {
     let cache_dir = get_cache_dir()?;
 
     if !cache_dir.exists() {
-        return Ok("Cache directory does not exist, nothing to clear".to_string());
+        return Ok(ClearCacheResult {
+            success: true,
+            message: "Cache directory does not exist, nothing to clear".to_string(),
+            files_cleared: 0,
+            files: Vec::new(),
+            errors: None,
+        });
     }
 
     let mut cleared_files = Vec::new();
@@ -45,13 +62,23 @@ pub fn clear_cache() -> Result<String, String> {
         ));
     }
 
-    if cleared_files.is_empty() {
-        Ok("Cache directory was already empty".to_string())
+    let result = if cleared_files.is_empty() {
+        ClearCacheResult {
+            success: true,
+            message: "Cache directory was already empty".to_string(),
+            files_cleared: 0,
+            files: Vec::new(),
+            errors: None,
+        }
     } else {
-        Ok(format!(
-            "Successfully cleared {} cache files: {}",
-            cleared_files.len(),
-            cleared_files.join(", ")
-        ))
-    }
+        ClearCacheResult {
+            success: true,
+            message: format!("Successfully cleared {} cache files", cleared_files.len()),
+            files_cleared: cleared_files.len(),
+            files: cleared_files,
+            errors: None,
+        }
+    };
+
+    Ok(result)
 }

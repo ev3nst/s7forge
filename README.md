@@ -150,5 +150,6 @@ Contributions are welcome! Please ensure:
 
 1. Code follows Rust conventions and passes `cargo clippy`
 2. Code is formatted with `cargo fmt`
-3. New features include appropriate error handling
-4. Changes maintain backward compatibility where possible
+3. Code is tested with `cargo test`
+4. New features include appropriate error handling
+5. Changes maintain backward compatibility where possible

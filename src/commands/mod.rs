@@ -1,8 +1,7 @@
 pub mod check_item_download;
 pub mod clear_cache;
 pub mod collection_items;
-pub mod popular_items;
-pub mod recent_items;
+pub mod discover_tags;
 pub mod search_workshop;
 pub mod steam_library_paths;
 pub mod subscribe;
