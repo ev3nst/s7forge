@@ -52,16 +52,40 @@ s7forge subscribed-items --app-id 548430
 #### Discovery
 
 ```bash
-# Search workshop
-s7forge search-workshop --app-id 548430 --query "tank" --page 1
+# Search workshop with multiple sort options
+s7forge search-workshop --app-id 548430 --query "tank" --sort-by relevance --page 1
 
 # Popular items with time periods
-s7forge popular-items --app-id 548430 --period one-week --page 1
-# Periods: today, one-week, three-months, six-months, one-year, all-time
+s7forge search-workshop --app-id 548430 --sort-by popular --period one-week --page 1
 
 # Recent items
-s7forge recent-items --app-id 548430 --page 1
+s7forge search-workshop --app-id 548430 --sort-by recent --page 1
+
+# Trending items
+s7forge search-workshop --app-id 548430 --sort-by trending --period one-week --page 1
+
+# Most subscribed items
+s7forge search-workshop --app-id 548430 --sort-by most-subscribed --period one-year --page 1
+
+# Recently updated items
+s7forge search-workshop --app-id 548430 --sort-by recently-updated --page 1
+
+# Search with tag filtering
+s7forge search-workshop --app-id 548430 --query "weapon" --tags "mod,multiplayer" --page 1
+
+# Discover available tags for a game
+s7forge discover-tags --app-id 548430
 ```
+
+**Sort Options:**
+- `relevance` - Text search relevance (requires query text)
+- `popular` - Most voted items (supports time periods)
+- `recent` - Recently published items
+- `trending` - Trending items (supports time periods)
+- `most-subscribed` - Most subscribed items (supports time periods)
+- `recently-updated` - Recently updated items
+
+**Time Periods:** `today`, `one-week`, `three-months`, `six-months`, `one-year`
 
 #### Management
 
@@ -77,6 +101,9 @@ s7forge steam-library-paths
 
 # Clear cache
 s7forge clear-cache
+
+# Discover available workshop tags
+s7forge discover-tags --app-id 548430
 ```
 
 ### Example Workshop Item Output
