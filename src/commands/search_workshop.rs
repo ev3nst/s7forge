@@ -10,7 +10,10 @@ use crate::utils::fetch_creator_names::fetch_creator_names;
 pub async fn search_workshop(
     steam_game_id: u32,
     search_text: String,
+    sort_by: String,
+    period: String,
     page: u32,
+    tags: Option<String>,
 ) -> Result<Vec<EnhancedWorkshopItem>, String> {
     if page == 0 {
         return Err("Page number must be at least 1".to_string());
@@ -27,27 +30,68 @@ pub async fn search_workshop(
             creator: AppId(steam_game_id),
             consumer: AppId(steam_game_id),
         };
+        let query_type = match sort_by.as_str() {
+            "relevance" => UGCQueryType::RankedByTextSearch,
+            "popular" => UGCQueryType::RankedByVote,
+            "recent" => UGCQueryType::RankedByPublicationDate,
+            "trending" => UGCQueryType::RankedByTrend,
+            "most-subscribed" => UGCQueryType::RankedByTotalUniqueSubscriptions,
+            "recently-updated" => UGCQueryType::RankedByLastUpdatedDate,
+            _ => UGCQueryType::RankedByTextSearch, // fallback to relevance
+        };
+
         let query_handle = ugc
-            .query_all(
-                UGCQueryType::RankedByTextSearch,
-                UGCType::Items,
-                app_ids,
-                page,
-            )
+            .query_all(query_type, UGCType::Items, app_ids, page)
             .map_err(|e| format!("Failed to create search query: {:?}", e))?;
-        query_handle
-            .set_search_text(&search_text)
+
+        let mut configured_query = query_handle
             .set_return_metadata(true)
             .set_return_children(true)
             .set_return_additional_previews(true)
-            .set_return_key_value_tags(true)
-            .fetch(move |fetch_result| {
-                let _ = tx_inner.send(
-                    fetch_result
-                        .map(|query_results| WorkshopItemsResult::from_query_results(query_results))
-                        .map_err(|e| format!("Steam API error: {:?}", e)),
-                );
-            });
+            .set_return_key_value_tags(true);
+
+        if !search_text.trim().is_empty() {
+            configured_query = configured_query.set_search_text(&search_text);
+        }
+
+        // Apply time period filtering only for query types that support it
+        // Based on Steam API documentation and steamworks library constraints
+        match query_type {
+            UGCQueryType::RankedByTrend
+            | UGCQueryType::RankedByVote
+            | UGCQueryType::RankedByTotalUniqueSubscriptions => {
+                let trend_days = match period.as_str() {
+                    "today" => 1,
+                    "one-week" => 7,
+                    "three-months" => 90,
+                    "six-months" => 180,
+                    "one-year" => 365,
+                    _ => 7, // default to one week
+                };
+                configured_query = configured_query.set_ranked_by_trend_days(trend_days);
+            }
+            _ => {
+                // Time period filtering not supported for this query type
+                // (RankedByTextSearch, RankedByPublicationDate, RankedByLastUpdatedDate, etc.)
+            }
+        }
+
+        if let Some(ref tag_filter) = tags {
+            let tag_list: Vec<&str> = tag_filter.split(',').map(|s| s.trim()).collect();
+            for tag in tag_list {
+                if !tag.is_empty() {
+                    configured_query = configured_query.add_required_tag(tag);
+                }
+            }
+        }
+
+        configured_query.fetch(move |fetch_result| {
+            let _ = tx_inner.send(
+                fetch_result
+                    .map(|query_results| WorkshopItemsResult::from_query_results(query_results))
+                    .map_err(|e| format!("Steam API error: {:?}", e)),
+            );
+        });
 
         let start_time = std::time::Instant::now();
         let timeout_duration = std::time::Duration::from_secs(30);

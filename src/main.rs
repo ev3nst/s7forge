@@ -106,39 +106,37 @@ enum Commands {
         #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
     },
-    /// Search workshop content by text query
+    /// Search workshop content by text query with flexible sorting options
     ///
-    /// Example: s7forge search-workshop --app-id 548430 --query "tank" --max-results 20
+    /// Example: s7forge search-workshop --app-id 548430 --query "tank" --sort-by relevance
+    /// Example: s7forge search-workshop --app-id 548430 --sort-by popular --period one-year --tags "mod,weapon"
+    /// Example: s7forge search-workshop --app-id 548430 --sort-by trending --period one-week
     #[command(name = "search-workshop")]
     SearchWorkshop {
         /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
         #[arg(long, help = "Steam App ID of the game")]
         app_id: u32,
-        /// Search query text
-        #[arg(long, help = "Text to search for in workshop items")]
-        query: String,
-        /// Page number for pagination (1-based)
+        /// Search query text (optional for non-relevance sorting)
         #[arg(
             long,
-            default_value = "1",
-            help = "Page number for pagination, starting from 1 (default: 1)"
+            default_value = "",
+            help = "Text to search for in workshop items (optional for most sort methods)"
         )]
-        page: u32,
-    },
-    /// Get most popular workshop items for a game
-    ///
-    /// Example: s7forge popular-items --app-id 548430 --max-results 20 --period one-year
-    #[command(name = "popular-items")]
-    PopularItems {
-        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
-        #[arg(long, help = "Steam App ID of the game")]
-        app_id: u32,
-        /// Time period for popularity ranking
+        query: String,
+        /// How to sort/rank the results
         #[arg(
             long,
-            default_value = "all-time",
-            value_parser = ["today", "one-week", "three-months", "six-months", "one-year", "all-time"],
-            help = "Time period for popularity ranking: today, one-week, three-months, six-months, one-year, all-time (default: all-time)"
+            default_value = "relevance",
+            value_parser = ["relevance", "popular", "recent", "trending", "most-subscribed", "recently-updated"],
+            help = "Sort results by: relevance (text search), popular (by votes), recent (by publication date), trending (recent popularity), most-subscribed (by total subscriptions), recently-updated (by last update date)"
+        )]
+        sort_by: String,
+        /// Time period filter for supported sort types
+        #[arg(
+            long,
+            default_value = "one-week",
+            value_parser = ["today", "one-week", "three-months", "six-months", "one-year"],
+            help = "Time period filter: today, one-week, three-months, six-months, one-year (applies to trending, popular, most-subscribed sorts)"
         )]
         period: String,
         /// Page number for pagination (1-based)
@@ -148,22 +146,12 @@ enum Commands {
             help = "Page number for pagination, starting from 1 (default: 1)"
         )]
         page: u32,
-    },
-    /// Get most recent workshop items for a game
-    ///
-    /// Example: s7forge recent-items --app-id 548430 --page 1
-    #[command(name = "recent-items")]
-    RecentItems {
-        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
-        #[arg(long, help = "Steam App ID of the game")]
-        app_id: u32,
-        /// Page number for pagination (1-based)
+        /// Filter by tags (comma-separated)
         #[arg(
             long,
-            default_value = "1",
-            help = "Page number for pagination, starting from 1 (default: 1)"
+            help = "Filter results by tags, comma-separated (e.g., 'mod,weapon')"
         )]
-        page: u32,
+        tags: Option<String>,
     },
     /// Get the local workshop path for a game
     ///
@@ -184,6 +172,15 @@ enum Commands {
     /// Example: s7forge clear-cache
     #[command(name = "clear-cache")]
     ClearCache,
+    /// Discover all available workshop tags for a game
+    ///
+    /// Example: s7forge discover-tags --app-id 548430
+    #[command(name = "discover-tags")]
+    DiscoverTags {
+        /// Steam App ID (e.g., 548430 for Deep Rock Galactic)
+        #[arg(long, help = "Steam App ID of the game")]
+        app_id: u32,
+    },
 }
 
 #[tokio::main]
@@ -229,22 +226,13 @@ async fn main() {
         Commands::SearchWorkshop {
             app_id,
             query,
-            page,
-        } => commands::search_workshop::search_workshop(app_id, query, page)
-            .await
-            .map(|items| serde_json::to_string_pretty(&items).unwrap()),
-        Commands::PopularItems {
-            app_id,
+            sort_by,
             period,
             page,
-        } => commands::popular_items::popular_items(app_id, period, page)
+            tags,
+        } => commands::search_workshop::search_workshop(app_id, query, sort_by, period, page, tags)
             .await
             .map(|items| serde_json::to_string_pretty(&items).unwrap()),
-        Commands::RecentItems { app_id, page } => {
-            commands::recent_items::recent_items(app_id, page)
-                .await
-                .map(|items| serde_json::to_string_pretty(&items).unwrap())
-        }
         Commands::WorkshopPath { app_id } => match commands::workshop_path::workshop_path(app_id) {
             Some(path) => Ok(serde_json::to_string_pretty(&path).unwrap()),
             None => Err(format!("Workshop path not found for app ID {}", app_id)),
@@ -253,6 +241,9 @@ async fn main() {
             .map(|paths| serde_json::to_string_pretty(&paths).unwrap()),
         Commands::ClearCache => commands::clear_cache::clear_cache()
             .map(|message| serde_json::to_string_pretty(&message).unwrap()),
+        Commands::DiscoverTags { app_id } => commands::discover_tags::discover_tags(app_id)
+            .await
+            .map(|tags| serde_json::to_string_pretty(&tags).unwrap()),
     };
 
     match result {
